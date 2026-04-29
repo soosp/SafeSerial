@@ -1,10 +1,10 @@
 # SafeSerial for ESP32 Series
 
-**Asynchronous, Thread-safe, and Non-blocking Serial Library for ESP32 series (with HWCDC and USBCDC support).**
+**Asynchronous, Thread-safe and Non-blocking Serial Library for ESP32 series (with HWCDC and USBCDC support).**
 
 ## Purpose
 
-SafeSerial masks hardware and timing limitations through an asynchronous queuing mechanism. It ensures that critical code paths (e.g., network callbacks) never stall due to relatively slow serial port operations. Supported port types: UART, HWCDC, and USBCDC. SafeSerial (with the exception of a few hardware-specific settings) standardizes and abstracts the serial interfaces used, allowing them to be used in a uniform manner.
+SafeSerial masks hardware and timing limitations through an asynchronous queuing mechanism. It ensures that critical code paths (e.g., network callbacks) never stall due to relatively slow serial port operations. Supported port types: UART, HWCDC and USBCDC. SafeSerial (with the exception of a few hardware-specific settings) standardizes and abstracts the serial interfaces used, allowing them to be used in a uniform manner.
 
 ## How it Works
 

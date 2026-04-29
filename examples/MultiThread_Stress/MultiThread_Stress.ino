@@ -95,7 +95,7 @@ void Task(void *pvParameters) {
     // Periodic trigger logic
     if (currentMillis - startMillis < duration ) {
       if (currentMillis - previousMillis >= period) {
-        // Each task sends 3 atomic log lines every 'period'.
+        // Each task sends 4 atomic log lines every 'period'.
         SafeSerial.printf("Periodic Hello from %s, running on Core %u\n", tName, core);
         
         // DIAGNOSTICS: Check if our 2048-byte stack is sufficient.
