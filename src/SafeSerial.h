@@ -1,6 +1,6 @@
 /*
  * SafeSerial Library for ESP32 Series (Universal Asynchronous Serial port handler)
- * Created: 2026, Péter Soós in collaboration with Google Gemini
+ * Created: 2026, Péter Soós in collaboration with Google Gemini and Claude
  * License: MIT
  */
 
