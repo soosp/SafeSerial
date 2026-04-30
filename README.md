@@ -58,9 +58,12 @@ if (SafeSerial.available()) {
 
 ```cpp
 char buf[SAFESERIAL_LINE_BUFFER_SIZE];
+// Fill buffer with zeros
+memset(buf, 0, sizeof(buf));
 
 if (SafeSerial.available()) {
-  SafeSerial.readBytesUntil('\n', buf, sizeof(buf));
+  // Cut it to the appropriate line length so that the zero at the end remains
+  SafeSerial.readBytesUntil('\n', buf, sizeof(buf) - 1);
 }
 ```
 
