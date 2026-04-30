@@ -4,13 +4,17 @@
 
 ## Purpose
 
-SafeSerial masks hardware and timing limitations through an asynchronous queuing mechanism. It ensures that critical code paths (e.g., network callbacks) never stall due to relatively slow serial port operations. Supported port types: UART, HWCDC and USBCDC. SafeSerial (with the exception of a few hardware-specific settings) standardizes and abstracts the serial interfaces used, allowing them to be used in a uniform manner.
+SafeSerial masks hardware and timing limitations through an asynchronous queuing mechanism.
+It ensures that critical code paths (e.g., network callbacks) never stall due to relatively slow serial port operations.
+Supported port types: UART, HWCDC and USBCDC.
+SafeSerial (with the exception of a few hardware-specific settings) standardizes and abstracts the serial interfaces used, allowing them to be used in a uniform manner.
 
 ## How it Works
 
 The library leverages FreeRTOS capabilities to decouple the application logic from the serial peripheral:
 
-1. **Queue Management**: Every message to be sent is placed into a fixed-size FIFO (First-In-First-Out) queue. This is thread-safe and executes nearly instantaneously. The bytes to be read also arrive via a FIFO queue.
+1. **Queue Management**: Every message to be sent is placed into a fixed-size FIFO (First-In-First-Out) queue.
+This is thread-safe and executes nearly instantaneously. The bytes to be read also arrive via a FIFO queue.
 2. **Background Task**: A dedicated task (using `xTaskCreateUniversal`) monitors the queues and transmits data when resources are available.
 
 ## Quick Start
@@ -175,7 +179,8 @@ If your application generates a high volume of logs:
 
 ## Memory Management: Why `SAFESERIAL_LINE_BUFFER_SIZE`?
 
-The maximum size of a single log line (including the trailing zero) is defined as a compile-time constant (`#define`). While dynamic sizing (runtime) might seem more flexible, SafeSerial prioritizes system stability.
+The maximum size of a single log line (including the trailing zero) is defined as a compile-time constant (`#define`).
+While dynamic sizing (runtime) might seem more flexible, SafeSerial prioritizes system stability.
 
 ### The Function
 
@@ -183,8 +188,10 @@ This constant determines the size of the static buffers used during string forma
 
 ### Why Static over Dynamic?
 
-- Deterministic RAM Usage: By using a fixed-size buffer, the memory is allocated at the start. You will never face a "surprise" out-of-memory crash after 48 hours of operation because of a long log line.
-- Heap Fragmentation Prevention: In embedded systems, frequently using new, malloc, or String operations can "punch holes" in your RAM (fragmentation). Over time, this makes it impossible to allocate even small blocks of memory, leading to crashes. SafeSerial stays purely on the Stack, which is faster and safer.
+- Deterministic RAM Usage: By using a fixed-size buffer, the memory is allocated at the start.
+You will never face a "surprise" out-of-memory crash after 48 hours of operation because of a long log line.
+- Heap Fragmentation Prevention: In embedded systems, frequently using new, malloc, or String operations can "punch holes" in your RAM (fragmentation).
+Over time, this makes it impossible to allocate even small blocks of memory, leading to crashes. SafeSerial stays purely on the Stack, which is faster and safer.
 - Performance: Allocating a buffer on the stack is nearly instantaneous (just moving a pointer), whereas heap allocation requires searching for a free block of memory.
 
 ### How to Change It
@@ -207,7 +214,8 @@ Define it before including SafeSerial.h in your code:
 #include <SafeSerial.h>
 ```
 
-⚠️ **Pro Tip**: If you increase this value significantly (e.g., to 1024), remember to also increase the task stack size using `setStackSize()`. The buffer for the line to be printed lives on the task's stack, so the stack must always be larger than the maximum line length plus some overhead for the OS.
+⚠️ **Pro Tip**: If you increase this value significantly (e.g., to 1024), remember to also increase the task stack size using `setStackSize()`.
+The buffer for the line to be printed lives on the task's stack, so the stack must always be larger than the maximum line length plus some overhead for the OS.
 
 ## Diagnostics
 
@@ -229,13 +237,16 @@ There is a getter function `uint32_t getDroppedMessages(void)` to check the numb
 SafeSerial.printf(F("Dropped messages: %u\n"), SafeSerial.getDroppedMessages());
 ```
 
-The result is 32-bit to preserve the atomic nature of the internal counter on the ESP32. Its maximum value is UINT32_MAX (4,294,967,295). That’s more than enough for most purposes. When it reaches this value, it stops incrementing; it does not reset to 0.
+The result is 32-bit to preserve the atomic nature of the internal counter on the ESP32. Its maximum value is UINT32_MAX (4,294,967,295).
+That’s more than enough for most purposes. When it reaches this value, it stops incrementing; it does not reset to 0.
 
 ## Limitations
 
-- **Memory Footprint**: By default, it uses ~8.5 kB for the queues (~7.5 kB for Tx, ~1 kB for Rx) plus 4 kB for the task stack per instance (conservative default; typically ~1-2 kB is enough, verifiable with `getStackHighWatermark()`).
+- **Memory Footprint**: By default, it uses \~8.5 kB for the queues (\~7.5 kB for Tx, \~1 kB for Rx) plus 4 kB for the task stack per instance
+(conservative default; typically \~1-2 kB is enough, verifiable with `getStackHighWatermark()`).
 - **Dropping Logs**: If the queue is full (e.g., during a massive flood of logs), new messages will be dropped to prevent the main application from hanging.
-- **Throughput Limit**: Dropped messages depend not only on queue depth and message frequency, but also on line length and baud rate — the serial interface transmits one character at a time, so longer lines at lower baud rates increase the risk of queue overflow.
+- **Throughput Limit**: Dropped messages depend not only on queue depth and message frequency, but also on line length and baud rate — the serial interface
+transmits one character at a time, so longer lines at lower baud rates increase the risk of queue overflow.
 
 ## License
 
