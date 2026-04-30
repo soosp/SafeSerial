@@ -17,6 +17,21 @@ The library leverages FreeRTOS capabilities to decouple the application logic fr
 This is thread-safe and executes nearly instantaneously. The bytes to be read also arrive via a FIFO queue.
 2. **Background Task**: A dedicated task (using `xTaskCreateUniversal`) monitors the queues and transmits data when resources are available.
 
+## Installation
+
+### PlatformIO
+
+Add to your `platformio.ini`:
+
+```ini
+lib_deps =
+    soosp/SafeSerial @ ^1.0.2
+```
+
+### Arduino IDE
+
+Search for **SafeSerial** in the Library Manager (Sketch → Include Library → Manage Libraries).
+
 ## Quick Start
 
 ```cpp
