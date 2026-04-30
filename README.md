@@ -62,7 +62,8 @@ char buf[SAFESERIAL_LINE_BUFFER_SIZE];
 memset(buf, 0, sizeof(buf));
 
 if (SafeSerial.available()) {
-  // Cut it to the appropriate line length so that the zero at the end remains
+  // readBytesUntil reads until '\n' or buffer is full
+  // This cuts the message to the appropriate line length so that the zero at the end remains
   SafeSerial.readBytesUntil('\n', buf, sizeof(buf) - 1);
 }
 ```

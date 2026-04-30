@@ -113,7 +113,8 @@ void Task(void *pvParameters) {
       // Critical: Yield to FreeRTOS idle task to prevent WDT resets.
       vTaskDelay(1); 
     } else {
-      vTaskDelay(pdMS_TO_TICKS(1));
+      // The task has been completed; it can be deleted
+      vTaskDelete(NULL);
     }
   }
 }

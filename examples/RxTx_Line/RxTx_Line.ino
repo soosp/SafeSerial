@@ -19,10 +19,12 @@ void setup() {
 
 void loop() {
     char buf[SAFESERIAL_LINE_BUFFER_SIZE];
+    // Fill buffer with zeros
     memset(buf, 0, sizeof(buf));
 
     if (SafeSerial.available()) {
         // readBytesUntil reads until '\n' or buffer is full
+        // This cuts the message to the appropriate line length so that the zero at the end remains
         if (SafeSerial.readBytesUntil('\n', buf, sizeof(buf) - 1)) {
             SafeSerial.println(buf);
         }
