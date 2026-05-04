@@ -1,7 +1,7 @@
 {
   "name": "SafeSerial",
   "version": "1.0.2",
-  "description": "Asynchronous, Thread-safe, and Non-blocking Serial Library for ESP32 series (with HWCDC and USBCDC support).",
+  "description": "Asynchronous, Thread-safe, and Non-blocking Serial Library for ESP32 Arduino Core (with HWCDC and USBCDC support).",
   "keywords": "logging, serial, async, esp32, esp32-s3, usb-cdc, freertos",
   "repository": {
     "type": "git",
