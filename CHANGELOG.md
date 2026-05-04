@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2026-05-04
+
+### Changed
+
+- More accurate title for package
+- Line legth in text documents have been reduced to a maximum of 80 characters
+
 ## [1.0.2] - 2026-04-30
 
 ### Fixed
