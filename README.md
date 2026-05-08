@@ -3,6 +3,8 @@
 **Asynchronous, Thread-safe and Non-blocking Serial Library (with HWCDC and
 USBCDC support) for ESP32 Arduino Core.**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Purpose
 
 SafeSerial masks hardware and timing limitations through an asynchronous
