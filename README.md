@@ -1,4 +1,4 @@
-# SafeSerial for ESP32 Series
+# SafeSerial for ESP32 Arduino Core
 
 **Asynchronous, Thread-safe and Non-blocking Serial Library (with HWCDC and
 USBCDC support) for ESP32 Arduino Core.**
