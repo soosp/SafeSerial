@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Update title of README.md
+
+### Added
+
 - Add Changelog links as per [Keep a Changelog](https://keepachangelog.com)
 
 ## [1.0.3] - 2026-05-04
