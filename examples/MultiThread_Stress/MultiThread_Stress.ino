@@ -7,10 +7,13 @@
 #include <Arduino.h>
 #include <esp_log.h>
 
-// 1. LIMIT LINE LENGTH:
-// Compile-time constant to save stack memory.
-// Must be defined before including SafeSerial.h.
-#define SAFESERIAL_LINE_BUFFER_SIZE 128
+// This example use a smaller line buffer (128 B) A sketch-level #define does
+// NOT reach the library in Arduino IDE, because each library .cpp is a
+// separate translation unit. The size is therefore set as a global build flag
+// in the companion file "Modem_A76xx.ino.globals.h" (kept next to this
+// sketch).
+// Under PlatformIO instead add:
+//   build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=128
 #include <SafeSerial.h>
 
 // 2. TEST PARAMETERS:

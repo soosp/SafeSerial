@@ -8,7 +8,6 @@
 #include <esp_log.h>
 #include <time.h>
 
-#define SAFESERIAL_LINE_BUFFER_SIZE 256
 #include <SafeSerial.h>
 
 void setup() {

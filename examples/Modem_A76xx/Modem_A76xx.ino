@@ -7,10 +7,15 @@
  */
 
 #include <Arduino.h>
-
-// Increase buffer size to handle long AT responses (e.g. HTTP, GNSS)
-#define SAFESERIAL_LINE_BUFFER_SIZE 512
 #include <SafeSerial.h>
+
+// This example needs a larger line buffer (512 B) to handle long AT
+// responses (e.g. HTTP, GNSS). A sketch-level #define does NOT reach the
+// library in Arduino IDE, because each library .cpp is a separate
+// translation unit. The size is therefore set as a global build flag in the
+// companion file "Modem_A76xx.ino.globals.h" (kept next to this sketch).
+// Under PlatformIO instead add:
+//   build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=512
 
 // Pin definitions (ESP32-S3 example)
 #define MODEM_RX  40  // GPIO pin connected to modem TX

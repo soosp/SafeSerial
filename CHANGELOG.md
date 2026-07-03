@@ -12,6 +12,18 @@ All notable changes to this project will be documented in this file.
 
 - Add Changelog links as per [Keep a Changelog](https://keepachangelog.com)
 
+### Fixed
+
+- Corrected `SAFESERIAL_LINE_BUFFER_SIZE` configuration docs: a sketch-level
+  `#define` has no effect in Arduino IDE, since each library `.cpp` is a
+  separate translation unit. Documented the `*.ino.globals.h` build-options
+  method and fixed the PlatformIO build-flag syntax (`-D NAME=VALUE`).
+- Reworked examples that relied on the ineffective sketch `#define`
+  (Basic, API_Reference, RxTx_Line).
+- Added a companion `Modem_A76xx.ino.globals.h` so long AT responses are no
+  longer silently truncated at 255 bytes.
+- Added a companion `MultiThread_Stress.ino.globals.h` to fine tune the test.
+
 ## [1.0.3] - 2026-05-04
 
 ### Changed

@@ -6,9 +6,12 @@
  */
 
 #include <Arduino.h>
-
-#define SAFESERIAL_LINE_BUFFER_SIZE 10
 #include <SafeSerial.h>
+
+// Small sketch-local line buffer to demonstrate line-by-line reading.
+// NOTE: this only sizes the buffer in THIS sketch; it does NOT change the
+// library's internal buffer (SAFESERIAL_LINE_BUFFER_SIZE is a build flag).
+constexpr size_t LINE_LEN = 10;
 
 
 void setup() {
@@ -18,7 +21,7 @@ void setup() {
 }
 
 void loop() {
-    char buf[SAFESERIAL_LINE_BUFFER_SIZE];
+    char buf[LINE_LEN];
     // Fill buffer with zeros
     memset(buf, 0, sizeof(buf));
 

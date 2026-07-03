@@ -3,8 +3,6 @@
  * This example demonstrates basic usage of SafeSerial logging.
  */
 
-// Configuration (optional)
-#define SAFESERIAL_LINE_BUFFER_SIZE 128
 #include <SafeSerial.h>
 #include <esp_log.h>
 

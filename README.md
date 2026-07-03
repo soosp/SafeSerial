@@ -44,8 +44,6 @@ Manage Libraries).
 ## Quick Start
 
 ```cpp
-// Configuration (optional)
-#define SAFESERIAL_LINE_BUFFER_SIZE 128
 #include <SafeSerial.h>
 
 void setup() {
@@ -247,23 +245,38 @@ function. Instead, define it in your build environment.
 
 ```Ini, TOML
 build_flags = 
-  -D SAFESERIAL_LINE_BUFFER_SIZE 512  ; Default is 256
+  -D SAFESERIAL_LINE_BUFFER_SIZE=512  ; Default is 256
 ```
 
 #### In Arduino IDE
 
-Define it before including SafeSerial.h in your code:
+A sketch-level `#define` does **not** work here: every library `.cpp` is
+compiled as a separate translation unit and never sees a macro defined in your
+`.ino`. Instead, create a file named `<YourSketch>.ino.globals.h` next to the
+sketch, containing an ESP32 build-options block:
 
 ```cpp
-#define SAFESERIAL_LINE_BUFFER_SIZE 512
-#include <SafeSerial.h>
+/*@create-file:build.opt@
+-DSAFESERIAL_LINE_BUFFER_SIZE=512
+*/
 ```
+
+The ESP32 core applies these flags to *every* translation unit, including the
+library itself. The equivalent from the command line is:
+
+```sh
+arduino-cli compile \
+  --build-property build.extra_flags=-DSAFESERIAL_LINE_BUFFER_SIZE=512 ...
+```
+
+See the `Modem_A76xx` example for a working companion `*.ino.globals.h` file.
 
 ⚠️ **Pro Tip**: If you increase this value significantly (e.g., to 1024),
 remember to also increase the task stack size using `setStackSize()`.
-The buffer for the line to be printed lives on the task's stack, so the stack
-must always be larger than the maximum line length plus some overhead for
-the OS.
+The line is formatted (via `vsnprintf`) on the stack of the *calling* task,
+and a copy is processed on the SafeSerial task's own stack. Both must stay
+larger than the maximum line length plus some overhead (use `setStackSize()`
+for the SafeSerial task; size your own tasks accordingly).
 
 ## Diagnostics
 
