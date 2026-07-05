@@ -13,6 +13,5 @@
 
 /*@create-file:build.opt@
 // Lines starting with // (or * or #) are ignored by the build.opt parser.
-// Raise the SafeSerial line buffer so long AT responses fit (default: 256).
 -DSAFESERIAL_LINE_BUFFER_SIZE=128
 */

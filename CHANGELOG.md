@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
   (Basic, API_Reference, MultiThread_Stress, RxTx_Line).
 - Added a companion `Modem_A76xx.ino.globals.h` so long AT responses are no
   longer silently truncated at 255 bytes.
+- Fixed comments about `MultiThread_Stress.ino.globals.h`.
 
 ## [1.0.3] - 2026-05-04
 

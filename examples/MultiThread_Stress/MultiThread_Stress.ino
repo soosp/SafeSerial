@@ -10,7 +10,7 @@
 // This example use a smaller line buffer (128 B) A sketch-level #define does
 // NOT reach the library in Arduino IDE, because each library .cpp is a
 // separate translation unit. The size is therefore set as a global build flag
-// in the companion file "Modem_A76xx.ino.globals.h" (kept next to this
+// in the companion file "MultiThread_Stress.ino.globals.h" (kept next to this
 // sketch).
 // Under PlatformIO instead add:
 //   build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=128
