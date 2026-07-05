@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 - Documented raising `SAFESERIAL_LINE_BUFFER_SIZE` via a global build flag for
   long AT responses in the `Modem_A76xx` example. No `*.ino.globals.h` is
   shipped, since such a file hides the example from the Arduino IDE Examples
-  menu. Also documented in MultiThread_Stress.ino.
+  menu. It is mentioned in `MultiThread_Stress.ino` too for fine tuning the test.
 
 ## [1.0.3] - 2026-05-04
 

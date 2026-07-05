@@ -7,15 +7,10 @@
 #include <Arduino.h>
 #include <esp_log.h>
 
-// This example runs with the default 256-byte line buffer, This example may
-// need a smaller line buffer (128 B).
+// This example runs with the default 256-byte line buffer.
 // To change the limit, set SAFESERIAL_LINE_BUFFER_SIZE as a GLOBAL BUILD FLAG
 // (a sketch-level #define does not reach the library .cpp). See the README
-// section "How to Change It". In short:
-//   - PlatformIO:  build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=128
-//   - Arduino IDE: a companion <sketch>.ino.globals.h file. NOTE: such a file
-//     is intentionally NOT shipped here, because a *.ino.globals.h file in an
-//     example folder hides the example from the IDE's Examples menu.
+// section "How to Change It".
 #include <SafeSerial.h>
 
 // 2. TEST PARAMETERS:
