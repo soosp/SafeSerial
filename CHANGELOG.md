@@ -25,9 +25,10 @@ All notable changes to this project will be documented in this file.
   method and fixed the PlatformIO build-flag syntax (`-D NAME=VALUE`).
 - Reworked examples that relied on the ineffective sketch `#define`
   (Basic, API_Reference, MultiThread_Stress, RxTx_Line).
-- Added a companion `Modem_A76xx.ino.globals.h` so long AT responses are no
-  longer silently truncated at 255 bytes.
-- Fixed comments about `MultiThread_Stress.ino.globals.h`.
+- Documented raising `SAFESERIAL_LINE_BUFFER_SIZE` via a global build flag for
+  long AT responses in the `Modem_A76xx` example. No `*.ino.globals.h` is
+  shipped, since such a file hides the example from the Arduino IDE Examples
+  menu. Also documented in MultiThread_Stress.ino.
 
 ## [1.0.3] - 2026-05-04
 

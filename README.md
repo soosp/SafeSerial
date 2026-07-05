@@ -269,7 +269,10 @@ arduino-cli compile \
   --build-property build.extra_flags=-DSAFESERIAL_LINE_BUFFER_SIZE=512 ...
 ```
 
-See the `Modem_A76xx` example for a working companion `*.ino.globals.h` file.
+> **Heads-up:** a `*.ino.globals.h` file placed in a sketch/example folder
+> hides that folder from the Arduino IDE Examples menu (the `.ino` in the
+> file name confuses sketch discovery). Use it in your own sketch folders,
+> but do not ship it inside a published example — document the flag instead.
 
 ⚠️ **Pro Tip**: If you increase this value significantly (e.g., to 1024),
 remember to also increase the task stack size using `setStackSize()`.
