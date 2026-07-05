@@ -6,6 +6,13 @@
 
 #include "SafeSerial.h"
 
+// Saturating atomic increment: stops at UINT32_MAX instead of wrapping around.
+static inline void satIncrement(uint32_t &counter) {
+  if (__atomic_load_n(&counter, __ATOMIC_RELAXED) < UINT32_MAX) {
+    __atomic_fetch_add(&counter, 1, __ATOMIC_RELAXED);
+  }
+}
+
 SafeSerialClass::SafeSerialClass() :
   _stream(&Serial),
   _txQueueSize(30),    // Number of queue lines for TX
@@ -18,7 +25,9 @@ SafeSerialClass::SafeSerialClass() :
   _txBufferSize(0),    // The default value of 0 means, that the hardware's default value is used.
   _txTimeoutMs(100),
   _maxRxBurst(64),
-  _droppedMessages(0)
+  _portType(PORT_UART),
+  _droppedMessages(0),
+  _skippedWhileDisconnected(0)
 {
   // Allocate memory for the TX queue buffer (SAFESERIAL_LINE_BUFFER_SIZE bytes per element)
   _txQueue = xQueueCreate(_txQueueSize, SAFESERIAL_LINE_BUFFER_SIZE);
@@ -43,6 +52,7 @@ QueueHandle_t SafeSerialClass::getRxQueueHandle() {
 #if HWCDC_SERIAL_IS_DEFINED == 1
 void SafeSerialClass::begin(HWCDC& port, unsigned long baud) {
   _stream = &port;
+  _portType = PORT_HWCDC;
   port.setRxBufferSize(_rxBufferSize);
   port.setTxBufferSize(_txBufferSize);
   port.begin(baud);
@@ -61,6 +71,7 @@ void SafeSerialClass::begin(HWCDC& port, unsigned long baud) {
 #if USBCDC_SERIAL_IS_DEFINED == 1
 void SafeSerialClass::begin(USBCDC& port, unsigned long baud) {
   _stream = &port;
+  _portType = PORT_USBCDC;
   port.begin(baud);
   port.setTxTimeoutMs(_txTimeoutMs);
 
@@ -87,6 +98,7 @@ void SafeSerialClass::begin(unsigned long baud, uint32_t config, int8_t rxPin, i
 
 void SafeSerialClass::begin(HardwareSerial& port, unsigned long baud, uint32_t config, int8_t rxPin, int8_t txPin) {
   _stream = &port;
+  _portType = PORT_UART;
   port.setRxBufferSize(_rxBufferSize);
   port.setTxBufferSize(_txBufferSize);
   port.begin(baud, config, rxPin, txPin);
@@ -118,10 +130,7 @@ void SafeSerialClass::_sendToQueue(const char* msg) {
   strncpy(buf, msg, sizeof(buf) - 1); // Copy only as many bytes as available, leaving the rest zeroed
   
   if (xQueueSend(_txQueue, buf, 0) != pdTRUE) {
-    // Increment saturating counter — stops at UINT32_MAX instead of wrapping around
-    if (__atomic_load_n(&_droppedMessages, __ATOMIC_RELAXED) < UINT32_MAX) {
-      __atomic_fetch_add(&_droppedMessages, 1, __ATOMIC_RELAXED);
-    }
+    satIncrement(_droppedMessages); // Queue full — drop and count
   }
 }
 
@@ -204,6 +213,22 @@ int SafeSerialClass::peek() {
     return -1;
 }
 
+bool SafeSerialClass::_isConnected() {
+  switch (_portType) {
+#if HWCDC_SERIAL_IS_DEFINED == 1
+    case PORT_HWCDC:  return (bool)*static_cast<HWCDC*>(_stream);
+#endif
+#if USBCDC_SERIAL_IS_DEFINED == 1
+    case PORT_USBCDC: return (bool)*static_cast<USBCDC*>(_stream);
+#endif
+    default:          return true; // UART: no host-presence feedback, treat as ready
+  }
+}
+
+bool SafeSerialClass::isConnected(void) {
+  return _isConnected();
+}
+
 void SafeSerialClass::_safeSerialTask(void *pvParameters) {
   SafeSerialClass *instance = (SafeSerialClass *)pvParameters;
   uint8_t rxByte;
@@ -222,10 +247,16 @@ void SafeSerialClass::_safeSerialTask(void *pvParameters) {
     }
 
     if (xQueueReceive(instance->_txQueue, txBuf, pdMS_TO_TICKS(1))) {
-      if (instance->_stream) {
+      if (instance->_stream && instance->_isConnected()) {
         instance->_stream->print(txBuf);
         instance->_stream->flush();
         vTaskDelay(1);
+      } else {
+        // No active terminal/host: discard instead of blocking on flush()
+        // (avoids the ~100 ms HWCDC stall and TX-queue congestion while
+        // headless). The message is already dequeued, so it is dropped.
+        satIncrement(instance->_droppedMessages);
+        satIncrement(instance->_skippedWhileDisconnected);
       }
     }
     vTaskDelay(1);
@@ -240,6 +271,11 @@ UBaseType_t SafeSerialClass::getStackHighWatermark(void) {
 // For diagnostics: number of the dropped messages during the task's lifetime
 uint32_t SafeSerialClass::getDroppedMessages(void) {
   return __atomic_load_n(&_droppedMessages, __ATOMIC_RELAXED);
+}
+
+// For diagnostics: messages dropped specifically while no terminal/host was connected
+uint32_t SafeSerialClass::getSkippedWhileDisconnected(void) {
+  return __atomic_load_n(&_skippedWhileDisconnected, __ATOMIC_RELAXED);
 }
 
 // SafeSerial global instance definition

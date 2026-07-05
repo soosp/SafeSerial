@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Add Changelog links as per [Keep a Changelog](https://keepachangelog.com)
+- `isConnected()` and the background-task connection gate: on a headless
+  HW-CDC/USB-CDC port messages are now discarded instead of blocking the task
+  on `flush()` (avoids TX-queue congestion and RX stalls while disconnected).
+- `getSkippedWhileDisconnected()` counter for messages dropped due to a
+  missing terminal (also included in `getDroppedMessages()`).
 
 ### Fixed
 
@@ -19,10 +24,9 @@ All notable changes to this project will be documented in this file.
   separate translation unit. Documented the `*.ino.globals.h` build-options
   method and fixed the PlatformIO build-flag syntax (`-D NAME=VALUE`).
 - Reworked examples that relied on the ineffective sketch `#define`
-  (Basic, API_Reference, RxTx_Line).
+  (Basic, API_Reference, MultiThread_Stress, RxTx_Line).
 - Added a companion `Modem_A76xx.ino.globals.h` so long AT responses are no
   longer silently truncated at 255 bytes.
-- Added a companion `MultiThread_Stress.ino.globals.h` to fine tune the test.
 
 ## [1.0.3] - 2026-05-04
 

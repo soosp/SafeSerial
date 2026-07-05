@@ -41,13 +41,19 @@ private:
   uint32_t _txTimeoutMs;              // Timeout for write operations
   uint8_t _maxRxBurst;                // Maximum bytes read per task cycle to prevent RX from starving TX
 
-  uint32_t _droppedMessages;          // Number of dropped messages since initialization
+  // Underlying port type, recorded at begin() so _isConnected() can downcast
+  enum PortType : uint8_t { PORT_UART, PORT_HWCDC, PORT_USBCDC };
+  PortType _portType;                 // Type of the active port
+
+  uint32_t _droppedMessages;          // Total dropped messages (overflow + disconnect)
+  uint32_t _skippedWhileDisconnected; // Subset dropped due to no active terminal/host
 
   QueueHandle_t _txQueue;             // FreeRTOS queue handle for TX
   QueueHandle_t _rxQueue;             // FreeRTOS queue handle for RX
 
   void _beginTask();                  // Internal method to launch the task
   void _sendToQueue(const char* msg); // Pushes formatted string to the queue
+  bool _isConnected();                // True if a terminal/host is present (UART: always true)
 
   // Background task that actually performs the serial writes
   static void _safeSerialTask(void *pvParameters);
@@ -144,11 +150,17 @@ public:
   int read() override;
   int peek() override;
 
+  // True if a terminal/host connection is active (UART: always true after begin())
+  bool isConnected(void);
+
   // Get HighWaterMark value of stack for diagnostics
   UBaseType_t getStackHighWatermark(void);
 
   // For diagnostics: number of the dropped messages during the task's lifetime
   uint32_t getDroppedMessages(void);
+
+  // For diagnostics: dropped specifically because no terminal/host was connected
+  uint32_t getSkippedWhileDisconnected(void);
 };
 
 /**

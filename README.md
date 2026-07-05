@@ -278,6 +278,37 @@ and a copy is processed on the SafeSerial task's own stack. Both must stay
 larger than the maximum line length plus some overhead (use `setStackSize()`
 for the SafeSerial task; size your own tasks accordingly).
 
+## Behavior Without an Active Terminal
+
+How a serial port behaves when data is written while **no terminal is
+listening** depends on the port type:
+
+- **HW-CDC** (native USB Serial/JTAG): with no terminal open, the hardware TX
+  FIFO fills and each write **blocks** (up to the TX timeout, ~100 ms by
+  default). On a plain `Serial` this stalls the whole program.
+- **USB-CDC** (TinyUSB stack): non-blocking. With no DTR connection the driver
+  discards the bytes and execution continues.
+- **HW-UART** (real UART / USB-to-UART bridge): non-blocking. The UART pushes
+  bytes out of the TX pin regardless of whether anyone listens; there is no
+  feedback loop.
+
+Because SafeSerial performs the actual `print()`/`flush()` inside its
+background task (never on the caller), your application never blocks in any of
+these cases — `println()`/`printf()` only enqueue. However, on a headless
+HW-CDC port the background task itself would still block on `flush()`,
+congesting the TX queue and stalling RX servicing on that instance.
+
+To prevent this, the background task checks the port before writing: if no
+terminal/host is connected it discards the message instead of blocking. UART
+ports have no host-presence signal and are always treated as connected. You
+can query the state yourself with `isConnected()` (see Diagnostics), e.g. to
+skip verbose logging while headless.
+
+> **Note:** HW-CDC/USB-CDC connection detection relies on the port's boolean
+> operator (DTR / CDC line state). Its reliability is core-version dependent
+> (some early ESP32 Arduino cores always reported "connected"), and some
+> terminals do not assert DTR.
+
 ## Diagnostics
 
 ### Stack size
@@ -307,6 +338,22 @@ the ESP32. Its maximum value is UINT32_MAX (4,294,967,295). That’s more than
 enough for most purposes. When it reaches this value, it stops incrementing;
 it does not reset to 0.
 
+### Connection state
+
+`bool isConnected(void)` reports whether a terminal/host is currently present
+(always `true` on UART ports). Messages dropped **specifically** because no
+terminal was connected are counted both in `getDroppedMessages()` (the total)
+and, separately, in `getSkippedWhileDisconnected()`:
+
+```cpp
+SafeSerial.printf(F("Skipped while disconnected: %u\n"),
+                  SafeSerial.getSkippedWhileDisconnected());
+```
+
+Subtracting this from `getDroppedMessages()` isolates the drops caused by
+genuine queue overflow (high load) — the value to watch when tuning
+`setTxQueueSize()`.
+
 ## Limitations
 
 - **Memory Footprint**: By default, it uses \~8.5 kB for the queues (\~7.5 kB
@@ -316,6 +363,9 @@ for Tx, \~1 kB for Rx) plus 4 kB for the task stack per instance
 - **Dropping Logs**: If the queue is full (e.g., during a massive flood
 of logs), new messages will be dropped to prevent the main application
 from hanging.
+- **Headless HW-CDC**: When no terminal is connected, messages are dropped
+rather than blocking the background task, and counted via
+`getSkippedWhileDisconnected()`.
 - **Throughput Limit**: Dropped messages depend not only on queue depth and
 message frequency, but also on line length and baud rate — the serial interface
 transmits one character at a time, so longer lines at lower baud rates increase
