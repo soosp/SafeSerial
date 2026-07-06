@@ -22,7 +22,7 @@
 //   message cycle: 3 ms * 10 task * 4 messages/task = 120 ms
 // 10 tasks * 4 messages/task = 40 messages every 120ms cycle.
 // This equals ~333 messages per second.
-// There was no dropped messages with parameters above on HWUSB port of ESP32-S3
+// There was no dropped messages with parameters above on HW-CDC port of ESP32-S3
 const unsigned int rate = 3;                    // Target interval (ms) per message
 const unsigned int tasks = 10;                  // Total concurent logging tasks
 const unsigned long period = tasks * rate * 4;  // Total cycle duration
