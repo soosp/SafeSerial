@@ -248,31 +248,28 @@ build_flags =
   -D SAFESERIAL_LINE_BUFFER_SIZE=512  ; Default is 256
 ```
 
-#### In Arduino IDE
+#### In Arduino IDE / arduino-cli (ESP32)
 
-A sketch-level `#define` does **not** work here: every library `.cpp` is
-compiled as a separate translation unit and never sees a macro defined in your
-`.ino`. Instead, create a file named `<YourSketch>.ino.globals.h` next to the
-sketch, containing an ESP32 build-options block:
+A sketch-level `#define` does **not** work: every library `.cpp` is compiled as
+a separate translation unit and never sees a macro defined in your `.ino`.
+Instead, add a file named `build_opt.h` in the sketch folder, containing the
+raw compiler flag:
 
-```cpp
-/*@create-file:build.opt@
+```txt
 -DSAFESERIAL_LINE_BUFFER_SIZE=512
-*/
 ```
 
-The ESP32 core applies these flags to *every* translation unit, including the
-library itself. The equivalent from the command line is:
+The ESP32 core passes `build_opt.h` to *every* translation unit — including the
+library — via gcc's `@file` mechanism, so the size stays consistent everywhere.
+It holds compiler flags, not `#define`s (despite the `.h` name), and has no
+comment support, so keep it to bare `-D` flags. This works identically under
+`arduino-cli` (the file just lives in the sketch folder).
 
-```sh
-arduino-cli compile \
-  --build-property build.extra_flags=-DSAFESERIAL_LINE_BUFFER_SIZE=512 ...
-```
-
-> **Heads-up:** a `*.ino.globals.h` file placed in a sketch/example folder
-> hides that folder from the Arduino IDE Examples menu (the `.ino` in the
-> file name confuses sketch discovery). Use it in your own sketch folders,
-> but do not ship it inside a published example — document the flag instead.
+> **Note:** `build_opt.h` is the **ESP32** mechanism. It is unrelated to the
+> **ESP8266** `<Sketch>.ino.globals.h` / `/*@create-file:build.opt@ ... */`
+> approach, which the ESP32 does not read. Do not use a `*.ino.globals.h` file
+> on ESP32: it has no effect, and the `.ino` in its name also hides the folder
+> from the Arduino IDE Examples menu.
 
 ⚠️ **Pro Tip**: If you increase this value significantly (e.g., to 1024),
 remember to also increase the task stack size using `setStackSize()`.

@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Corrected the ESP32 build-flag instructions. The Arduino IDE / arduino-cli
+  method is a `build_opt.h` file in the sketch folder (raw `-D` compiler
+  flags, applied to every translation unit), NOT the ESP8266
+  `*.ino.globals.h` / `/*@create-file:build.opt@ ... */` mechanism, which the
+  ESP32 core does not read. This supersedes the `*.ino.globals.h` wording
+  under [1.1.0].
+
+### Added
+
+- Shipped a `build_opt.h` in the `Modem_A76xx` (512 B) and
+  `MultiThread_Stress` (128 B) examples so their intended line-buffer sizes
+  actually take effect on ESP32. `RxTx_Line` keeps a sketch-local read
+  buffer (setting the library buffer to 10 B would truncate the example's
+  own startup output).
+
 ## [1.1.0] - 2026-07-05
 
 ### Changed

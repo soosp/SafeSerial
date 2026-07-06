@@ -7,10 +7,12 @@
 #include <Arduino.h>
 #include <esp_log.h>
 
-// This example runs with the default 256-byte line buffer.
-// To change the limit, set SAFESERIAL_LINE_BUFFER_SIZE as a GLOBAL BUILD FLAG
-// (a sketch-level #define does not reach the library .cpp). See the README
-// section "How to Change It".
+// 1. LINE LENGTH (stack tuning):
+// This test uses a 128-byte line buffer so the per-task stack stays small
+// (see setStackSize(2048) below). SAFESERIAL_LINE_BUFFER_SIZE is a global
+// build flag, NOT a sketch #define (a #define never reaches the library
+// .cpp); it is set via the companion "build_opt.h" file. Under PlatformIO
+// (which ignores build_opt.h) use: build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=128
 #include <SafeSerial.h>
 
 // 2. TEST PARAMETERS:

@@ -9,17 +9,15 @@
 #include <Arduino.h>
 #include <SafeSerial.h>
 
-// This example runs with the default 256-byte line buffer, which is enough
-// for typical AT command/response traffic. Very long responses (large HTTP
-// bodies, verbose GNSS output) are truncated at 255 characters.
+// This example uses a 512-byte line buffer to handle long AT responses (large
+// HTTP bodies, verbose GNSS output). SAFESERIAL_LINE_BUFFER_SIZE is a global
+// build flag (a sketch-level #define does not reach the library .cpp); it is
+// set here via the companion "build_opt.h" file, which the ESP32 core applies
+// to every translation unit. Unlike a *.ino.globals.h file, build_opt.h does
+// not hide the example from the Arduino IDE Examples menu.
 //
-// To raise the limit, set SAFESERIAL_LINE_BUFFER_SIZE as a GLOBAL BUILD FLAG
-// (a sketch-level #define does not reach the library .cpp). See the README
-// section "How to Change It". In short:
-//   - PlatformIO:  build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=512
-//   - Arduino IDE: a companion <sketch>.ino.globals.h file. NOTE: such a file
-//     is intentionally NOT shipped here, because a *.ino.globals.h file in an
-//     example folder hides the example from the IDE's Examples menu.
+// Under PlatformIO (which ignores build_opt.h) set it instead with:
+//   build_flags = -D SAFESERIAL_LINE_BUFFER_SIZE=512
 
 // Pin definitions (ESP32-S3 example)
 #define MODEM_RX  40  // GPIO pin connected to modem TX
