@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-06
+
 ### Fixed
 
 - Corrected the ESP32 build-flag instructions. The Arduino IDE / arduino-cli
@@ -79,7 +81,8 @@ All notable changes to this project will be documented in this file.
 
 - First public release
 
-[unreleased]: https://github.com/soosp/SafeSerial/compare/1.1.0...HEAD
+[unreleased]: https://github.com/soosp/SafeSerial/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/soosp/SafeSerial/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/soosp/SafeSerial/compare/1.0.3...1.1.0
 [1.0.3]: https://github.com/soosp/SafeSerial/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/soosp/SafeSerial/compare/1.0.1...1.0.2

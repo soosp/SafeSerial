@@ -33,7 +33,7 @@ Add to your `platformio.ini`:
 
 ```ini
 lib_deps =
-    soosp/SafeSerial @ ^1.1.0
+    soosp/SafeSerial
 ```
 
 ### Arduino IDE
